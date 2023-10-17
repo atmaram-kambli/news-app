@@ -1,43 +1,298 @@
-import React, { Component } from 'react'
-import { NewsItem } from './NewsItem'
+import React, { Component } from 'react';
+import { NewsItem } from './NewsItem';
+import Spinner from './Spinner.js';
+import PropTypes from 'prop-types';
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export class News extends Component {
-    
-    constructor() {
-        super();
+    static propTypes = {
+        country: PropTypes.string,
+        pageSize: PropTypes.number, 
+        category: PropTypes.string,
+        apiKey: PropTypes.string,
+        setProgress: PropTypes.func
+    }
+    static defaultPropTypes = {
+        country: "in",
+        pageSize: 12,
+        category: "technology",
+        apiKey: "2e8380080be04e5eb6004ffc0fb4c2ca",
+        setProgress: () => {}
+    }
+    // articles = [  
+    //     {
+    //         "source": {
+    //             "id": null,
+    //             "name": "Moneycontrol"
+    //         },
+    //         "author": "Maryam Farooqui",
+    //         "title": "Gujarat Titans locks sponsors for IPL 2024, says not far away from break even",
+    //         "description": "The two season old team had joined the IPL bandwagon in 2022 when the league added two new teams. French private equity firm CVC Capital had acquired the franchise for Rs 5,625 crore.",
+    //         "url": "https://www.moneycontrol.com/news/trends/sports/gujarat-titans-locks-sponsors-for-ipl-2024-says-not-far-away-from-break-even-11519401.html",
+    //         "urlToImage": "https://images.moneycontrol.com/static-mcnews/2022/12/Collage-Maker-22-Dec-2022-04.13-PM-770x435.jpg",
+    //         "publishedAt": "2023-10-12T05:12:32Z",
+    //         "content": "Gujarat Titans, the two seasons old franchise is already prepping up for the upcoming season of the Indian Premier League (IPL) in 2024. It has locked sponsors and is looking to double its fanbase.\r\n… [+4049 chars]"
+    //     },
+    //     {
+    //         "source": {
+    //             "id": "bbc-news",
+    //             "name": "BBC News"
+    //         },
+    //         "author": "https://www.facebook.com/bbcnews",
+    //         "title": "Cricket World Cup: Indian, Pakistani players' friendship off the field",
+    //         "description": "The South Asian neighbours are fierce rivals on the cricket pitch - but share camaraderie outside of matches.",
+    //         "url": "https://www.bbc.co.uk/news/world-asia-india-67074571",
+    //         "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/12BFE/production/_131389767_gettyimages-1243978053-594x594.jpg",
+    //         "publishedAt": "2023-10-12T05:03:09Z",
+    //         "content": "Whenever India and Pakistan meet on a cricket pitch, the world witnesses another instalment of what is one of sports' most fiercely contested rivalries.\r\nAnd when the two meet at a World Cup, as they… [+5064 chars]"
+    //     },
+    //     {
+    //         "source": {
+    //             "id": null,
+    //             "name": "International Business Times"
+    //         },
+    //         "author": "Faisal KAMAL",
+    //         "title": "Four Key India-Pakistan Battles At World Cup",
+    //         "description": "Arch-rivals India and Pakistan meet in a blockbuster clash at the World Cup on Saturday.",
+    //         "url": "https://www.ibtimes.com/four-key-india-pakistan-battles-world-cup-3714932",
+    //         "urlToImage": "https://d.ibtimes.com/en/full/4492217/high-hopes-rohit-sharmas-battle-shaheen-shah-afridi-saturday-could-crucial.jpg",
+    //         "publishedAt": "2023-10-12T02:06:37Z",
+    //         "content": "Arch-rivals India and Pakistan meet in a blockbuster clash at the World Cup on Saturday.\r\nAFP Sport takes a look at four key battles that could decide the eagerly-awaited contest at the world's bigge… [+2257 chars]"
+    //     },
+    //     {
+    //         "source": {
+    //             "id": null,
+    //             "name": "CNA"
+    //         },
+    //         "author": null,
+    //         "title": "Afghanistan coach Trott sees progress despite second World Cup defeat",
+    //         "description": "NEW DELHI : Afghanistan lost their second successive World Cup game on Wednesday after an eight-wicket defeat by India but coach Jonathan Trott says they are making progress and have got to grips with conditions in Delhi where they play England next.Afghanist…",
+    //         "url": "https://www.channelnewsasia.com/sport/afghanistan-coach-trott-sees-progress-despite-second-world-cup-defeat-3839906",
+    //         "urlToImage": "https://onecms-res.cloudinary.com/image/upload/s--9Ya6Xp-m--/fl_relative,g_south_east,l_one-cms:core:watermark:reuters,w_0.1/f_auto,q_auto/c_fill,g_auto,h_676,w_1200/v1/one-cms/core/2023-10-12t035546z_1_lynxmpej9b03t_rtroptp_3_cricket-worldcup-ind-afg.jpg?itok=l2k6HIZt",
+    //         "publishedAt": "2023-10-12T03:55:46Z",
+    //         "content": "NEW DELHI : Afghanistan lost their second successive World Cup game on Wednesday after an eight-wicket defeat by India but coach Jonathan Trott says they are making progress and have got to grips wit… [+1825 chars]"
+    //     },
+    //     {
+    //         "source": {
+    //             "id": "the-times-of-india",
+    //             "name": "The Times of India"
+    //         },
+    //         "author": "Bloomberg",
+    //         "title": "India-Pakistan ICC World Cup cricket match sees sky-high resale ticket prices",
+    //         "description": "The India versus Pakistan match at the Cricket World Cup is generating immense excitement and demand for tickets. One fan, Nikhil Wadhwani, bought a ticket for $30 and resold it for $300, shocked by the high demand. This match is significant as it marks the f…",
+    //         "url": "https://economictimes.indiatimes.com/news/sports/india-pakistan-icc-world-cup-cricket-match-sees-sky-high-resale-ticket-prices/articleshow/104356213.cms",
+    //         "urlToImage": "https://img.etimg.com/thumb/msid-104356971,width-1200,height-630,imgsize-148346,overlay-economictimes/photo.jpg",
+    //         "publishedAt": "2023-10-12T02:56:35Z",
+    //         "content": "Nikhil Wadhwanis decision to buy a ticket for the hotly anticipated India versus Pakistan match at the mens Cricket World Cup is turning out to be the former derivatives traders best bet ever.The 32-… [+3680 chars]"
+    //     },
+    //     {
+    //         "source": {
+    //             "id": "the-times-of-india",
+    //             "name": "The Times of India"
+    //         },
+    //         "author": "ET Online",
+    //         "title": "Virat Kohli, Rohit Sharma break Sachin Tendulkar's records ahead of India-Pakistan clash",
+    //         "description": "In Wednesday's clash against Afghanistan, Indian skipper Rohit Sharma broke Sachin Tendulkar's record for the most centuries in World Cup history, achieving the feat in just three editions. Sharma also holds the record for the most centuries in a single World…",
+    //         "url": "https://economictimes.indiatimes.com/news/sports/virat-kohli-rohit-sharma-break-sachin-tendulkars-records-ahead-of-india-pakistan-clash/articleshow/104355254.cms",
+    //         "urlToImage": "https://img.etimg.com/thumb/msid-104355430,width-1200,height-630,imgsize-44342,overlay-economictimes/photo.jpg",
+    //         "publishedAt": "2023-10-12T01:28:03Z",
+    //         "content": "India go into their next World Cup clash against Pakistan with loads of confidence after their strong performance against Afghanistan. At the Arun Jaitley stadium in New Delhi on Wednesday, India not… [+1924 chars]"
+    //     },
+    //     {
+    //         "source": {
+    //             "id": null,
+    //             "name": "Business Today"
+    //         },
+    //         "author": "Business Today Desk",
+    //         "title": "Australia vs South Africa ICC World Cup 2023: When and where to watch, squads, key players, venue, pitch report, weather prediction",
+    //         "description": "Australia vs South Africa match 2023: This match comes after India defeated Australia by 6 wickets in Chennai",
+    //         "url": "https://www.businesstoday.in/latest/trends/story/australia-vs-south-africa-icc-world-cup-2023-when-and-where-to-watch-squads-key-players-venue-pitch-report-weather-prediction-401637-2023-10-12",
+    //         "urlToImage": "https://akm-img-a-in.tosshub.com/businesstoday/images/story/202310/ezgif-sixteen_nine_164.jpg",
+    //         "publishedAt": "2023-10-12T03:12:14Z",
+    //         "content": "Australia vs South Africa World Cup: The Australian team led by Pat Cummins is all set to face the Temba Bavuma-headed South African team in a much-awaited clash on Thursday. The match will take plac… [+2724 chars]"
+    //     },
         
-        this.state = {
-            articles: [],
-            loading : false
-        }
+    //     {
+    //         "source": {
+    //             "id": "the-times-of-india",
+    //             "name": "The Times of India"
+    //         },
+    //         "author": "TOI Sports Desk",
+    //         "title": "WATCH: Rohit Sharma's special message for Chris Gayle",
+    //         "description": "After surpassing Chris Gayle's record of most sixes in international cricket on Wednesday, India captain Rohit Sharma acknowledged drawing inspiration from the 'Universe Boss' himself throughout his journey.",
+    //         "url": "https://timesofindia.indiatimes.com/sports/cricket/icc-world-cup/news/watch-rohit-sharmas-special-message-for-chris-gayle/articleshow/104360777.cms",
+    //         "urlToImage": "https://static.toiimg.com/thumb/msid-104360827,width-1070,height-580,imgsize-42214,resizemode-75,overlay-toi_sw,pt-32,y_pad-40/photo.jpg",
+    //         "publishedAt": "2023-10-12T05:42:18Z",
+    //         "content": "ODI World Cup: Rohit Sharma's record ton powers IND to win over AFG"
+    //     },
+        
+    //     {
+    //         "source": {
+    //             "id": null,
+    //             "name": "FRANCE 24 English"
+    //         },
+    //         "author": "FRANCE24",
+    //         "title": "Four key India-Pakistan battles at World Cup",
+    //         "description": "AFP Sport takes a look at four key battles that could decide the eagerly-awaited contest at the world's biggest cricket stadium in Ahmedabad.\nRohit v Shaheen\nIndia skipper Rohit Sharma has struggled against Shaheen Shah Afridi's left-arm pace in the few outin…",
+    //         "url": "https://www.france24.com/en/live-news/20231012-four-key-india-pakistan-battles-at-world-cup",
+    //         "urlToImage": "https://s.france24.com/media/display/7d429c5c-68a3-11ee-9d70-005056bfb2b6/w:1280/p:16x9/3e8b16481e1961d4e0a9edf50984adf1b0478441.jpg",
+    //         "publishedAt": "2023-10-12T02:03:09Z",
+    //         "content": "Ahmedabad (India) (AFP) Arch-rivals India and Pakistan meet in a blockbuster clash at the World Cup on Saturday. AFP Sport takes a look at four key battles that could decide the eagerly-awaited conte… [+2264 chars]"
+    //     },
+    //     {
+    //         "source": {
+    //             "id": null,
+    //             "name": "Moneycontrol"
+    //         },
+    //         "author": "Hindi.Moneycontrol.com Team, Moneycontrol Hindi",
+    //         "title": "ICC Cricket World Cup 2023 Points Table: 11 अक्टूबर को हुए ODI मुकाबले के बाद नंबर दो पर पहुंची टीम इंडिया, न्यूजीलैंड टॉप पर काबिज",
+    //         "description": "ICC Cricket World Cup 2023 Points Table: 5 अक्टूबर को इंग्लैंड बनाम न्यूजीलैंड,  6 अक्टूबर को पाकिस्तान बनाम नीदरलैंड, 7 अक्टूबर को अफगानिस्तान और बांग्लादेश के अलावा साउथ अफ्रीका और श्रीलंका की भिड़ंत हुई, 8 अक्टूबर को भारत बनाम ऑस्ट्रेलिया, 9 अक्टूबर न्यूजी…",
+    //         "url": "https://hindi.moneycontrol.com/news/india/cricket/icc-cricket-world-cup-2023-points-table-team-standings-top-rankings-latest-updates-after-10-october-match-2-1540441.html",
+    //         "urlToImage": "https://images.moneycontrol.com/static-hindinews/2023/10/pointstableODI-725x435.jpg",
+    //         "publishedAt": "2023-10-12T03:50:23Z",
+    //         "content": "ICC Cricket World Cup 2023 Points Table: 5 ,  6 , 7 , 8 , 9 , 10 11 - 5 46 48 - 10 , 10"
+    //     },
+    //     {
+    //         "source": {
+    //             "id": null,
+    //             "name": "Moneycontrol"
+    //         },
+    //         "author": "Hindi.Moneycontrol.com Team, Moneycontrol Hindi",
+    //         "title": "Cricket World Cup 2023 AUS vs SA:  लखनऊ में होगा कंगारुओं और प्रोटीआज के बीच मुकाबला, जानिए किसका पलड़ा है भारी",
+    //         "description": "ICC World Cup 2023 का आगाज 5 अक्टूबर को अहमदाबाद स्टेडियम में इंग्लैंड बनाम न्यूजीलैंड की भिड़ंत से शुरू हुआ। इस क्रिकेट के महाकुंभ में 46 दिनों में 48 मैच होंगे। 10 टीमें 10 क्रिकेट ग्राउंड्स में वर्ल्ड कप की ट्रॉफी को अपने नाम करने की कोशिश करेंगी। पहली बार…",
+    //         "url": "https://hindi.moneycontrol.com/news/india/cricket/icc-cricket-world-cup-2023-south-africa-vs-australia-match-timings-playing-11-team-squad-1540191.html",
+    //         "urlToImage": "https://images.moneycontrol.com/static-hindinews/2023/10/tembabavuma-725x435.jpg",
+    //         "publishedAt": "2023-10-12T02:24:45Z",
+    //         "content": "ODI 180 - 50 54 1987, 1999, 2003, 2007 2015 ODI World Cup - 7 ODI"
+    //     },
+        
+        
+    //     {
+    //         "source": {
+    //             "id": "espn-cric-info",
+    //             "name": "ESPN Cric Info"
+    //         },
+    //         "author": "AAP",
+    //         "title": "Khawaja rested from Sheffield Shield under Cricket Australia workload management",
+    //         "description": "The Queensland captain will miss the game against Victoria with an eye on the Test summer which starts in December",
+    //         "url": "https://www.espncricinfo.com/story/usman-khawaja-rested-from-sheffield-shield-under-cricket-australia-workload-management-1402620",
+    //         "urlToImage": "https://img1.hscicdn.com/image/upload/f_auto/lsci/db/PICTURES/CMS/328800/328809.6.jpg",
+    //         "publishedAt": "2023-10-12T05:45:48Z",
+    //         "content": "NewsThe Queensland captain will miss the game against Victoria with an eye on the Test summer which starts in December"
+    //     }
+    // ]
+
+    capitalizeFirst = (s) => {
+        return s.charAt(0).toUpperCase() + s.slice(1, s.length);
     }
 
-    async componentDidMount() {
-        let url = "https://newsapi.org/v2/top-headlines?q=world&apiKey=5aaeb8f21219499e9c4d291cdc86dfb0";
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            // articles: this.articles,
+            articles: [],
+            page: 0,
+            loading : true,
+            totalResults: 0         
+        }
+        document.title = "NeweMania - " + this.capitalizeFirst(this.props.category);
+    }
+
+    updateNews = async () => {
+        const d = new Date();
+        this.setState({loading: true});
+        this.props.setProgress(5);
+        // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&from=${new Date(d- 2*86400000)}&to=${d}&sortBy=popularity&apiKey={this.props.apiKey}&pageSize=${this.props.pageSize}&page={this.state.page}`;
+        let url =  `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&from=${new Date(d- 2*86400000)}&to=${d}&sortBy=popularity&apiKey=${this.props.apiKey}&page=1&pageSize=${this.props.pageSize}`;
         const response = await fetch(url); //it returs the promise
+        this.props.setProgress(25);
+        if(response.status !== 200) {
+            console.log("could not fetch the data for");
+        }
         const data = await response.json();
-        // console.log(data);
+        this.props.setProgress(50);
+        console.log(data.totalResults);
+        console.log(data);
         this.setState({
-            articles: data.articles
+            articles: data.articles,
+            totalResults: data.totalResults,
+            loading:  false,
+            page: this.state.page + 1
+        });
+        this.props.setProgress(100);
+    }
+    
+    async componentDidMount() {
+        this.updateNews()
+    }
+    
+    fetchMoreData = async () => {
+        const d = new Date();
+        // this.setState({page: this.state.page + 1});
+        // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&from=${new Date(d- 2*86400000)}&to=${d}&sortBy=popularity&apiKey={this.props.apiKey}&pageSize=${this.props.pageSize}&page={this.state.page}`;
+        let url =  `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&from=${new Date(d- 2*86400000)}&to=${d}&sortBy=popularity&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+        const response = await fetch(url); //it returs the promise
+        if(response.status !== 200) {
+            console.log("could not fetch the data for");
+        }
+        const data = await response.json();
+        console.log(data.totalResults);
+        console.log(data);
+        this.setState({
+            articles: this.state.articles.concat(data.articles),
+            totalResults: data.totalResults,
+            loading:  false,
+            page: this.state.page + 1
         });
     }
 
+    handleNextPage = async () => {
+        this.setState({
+            page: this.state.page + 1
+        });
+        this.updateNews();
+    }
+    handlePrevPage = async () => {
+            this.setState({
+                page: this.state.page - 1
+            });
+            this.updateNews();
+        }
+
   render() {
     return (
-      <div className='container my-3'>
-            <h1>NewsMania - Top HeadLines</h1>
+        <>
+            <h1 className='text-center'>NewsMania - Top {this.capitalizeFirst(this.props.category)} HeadLines</h1>
+            {this.state.loading && <Spinner />}
+            <InfiniteScroll
+                dataLength={this.state.articles.length}
+                next={this.fetchMoreData}
+                hasMore={this.state.articles.length < this.state.totalResults}
+                loader={<Spinner />}>
+                <div className="container">
 
-            <div className="row">
-                {this.state.articles.map((obj) => {
-                    return (
-                        <div className="col-md-4">
-                            <NewsItem title={obj.title ? ((obj.title.length < 42) ? obj.title : obj.title.slice(0,42)+"...") : " "} description={(obj.description) ? ((obj.description.length < 88) ? obj.description : obj.description.slice(0,88)+"...") : " "} imageUrl={obj.urlToImage} newsUrl={obj.url}/>
-                        </div>
-                    );
-                })}
-            </div>
-      </div>
-      
+                    <div className="row my-3">
+                        {this.state.articles.map((obj) => {
+                            {/* {!(this.state.loading) && this.state.articles.map((obj) => { */ }
+                            return (
+                                <div key={obj.url} className="col-md-4 my-2">
+                                    <NewsItem title={obj.title ? ((obj.title.length < 42) ? obj.title : obj.title.slice(0, 42) + "...") : " "} description={(obj.description) ? ((obj.description.length < 88) ? obj.description : obj.description.slice(0, 88) + "...") : " "} imageUrl={obj.urlToImage} newsUrl={obj.url} source={obj.source.name} />
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+            </InfiniteScroll>
+            
+
+
+            {/* <div className="container d-flex justify-content-between my-3">
+                <button disabled={this.state.page <= 1} type="button" className="btn btn-primary" onClick={this.handlePrevPage} id="prev">&larr; previous</button>
+                <button disabled={(this.state.page + 1 > Math.ceil(this.state.totalResults/this.props.pageSize))} type="button" className="btn btn-primary" onClick={this.handleNextPage}>next &rarr;</button>
+            </div> */}
+        </>
     )
   }
 }
