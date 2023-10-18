@@ -1,8 +1,5 @@
 # NewsMania 
 
-![NewsMaina Logo](src/NewsMania-Logo.png)
-
-
 NewsMania is a React based Web Application that fetches data from a NEWS API and displays news articles based on categories.
 
 ## Table of Contents
@@ -24,15 +21,17 @@ A NewsMaina is React Based Web Application that designed to keep you informed an
 - Automatic infinite scroll for fetching more articles.
 - Loading Bar 
 
-# Technology Used
+## Technology Used
 
-<button>React</button>
-<button>JavaScript</button>
-<button>HTML</button>
-<button>CSS</button>
-<button>Bootstrap</button>
-<button>News API</button>
+- React
+- JavaScript
+- HTML
+- CSS
+- Bootstrap
+- News API
 
 
-Thank You for visiting !!!
-Have A Great Day!✌️✌️
+### Thank You for Visiting ✌️✌️
+
+Thank you for taking the time to explore my project.
+Have A Great Day !!!
