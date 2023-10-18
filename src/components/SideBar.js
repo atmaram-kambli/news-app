@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-
 export default function SideBar() {
   return (
     <div className='my-5 position-fixed'>
