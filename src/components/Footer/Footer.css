@@ -1,0 +1,30 @@
+.footer {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.linebreak {
+    height: 2px;
+    width: 90%;
+    background-color: white;
+    margin: auto;
+}
+
+.rights {
+    padding: 10px 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.rights p {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+@media screen and (max-width: 992px) {
+    .rights {
+        padding: 10px 40px;
+        flex-direction: column;
+        gap: 6px;
+    }
+}

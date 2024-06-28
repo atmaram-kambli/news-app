@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import News from './components/News';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, } from 'react-router-dom';
 import LoadingBar from 'react-top-loading-bar';
+import Footer from './components/Footer/Footer';
 
 const App = () => {
   const pageSize = 9;
-  const apiKey = process.env.REACT_APP_NEWS_API_1;
-  // const apiKey = process.env.REACT_APP_NEWS_API_2;
+  // const apiKey = process.env.REACT_APP_NEWS_API_1;
+  const apiKey = process.env.REACT_APP_NEWS_API_2;
 
   const [progress, setProgress] = useState(0);
 
@@ -19,6 +20,7 @@ const App = () => {
           progress={progress}
           height={3}
         />
+
         <Navbar />
           <Routes>
             <Route exact path="/" element={<News key="general" setProgress={setProgress}  pageSize={pageSize} country="in" apiKey={apiKey} category="general" />}></Route>
@@ -31,6 +33,7 @@ const App = () => {
             <Route exact path="/technology" element={<News key="technology" setProgress={setProgress}  pageSize={pageSize} country="in" apiKey={apiKey} category="technology" />}></Route>
           </Routes>
       </>
+      <Footer />
     </Router>
   )
 }

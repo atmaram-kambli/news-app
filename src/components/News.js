@@ -83,8 +83,8 @@ const News = (props) => {
         }
         const data = await response.json();
         props.setProgress(50);
-        console.log(data.totalResults);
-        console.log(data);
+        // console.log(data.totalResults);
+        // console.log(data);
         setArticles(data.articles);
         setPage(page + 1);
         setTotalResults(data.totalResults);
@@ -131,7 +131,7 @@ const News = (props) => {
 
     return (
         <>
-            <h1 className='text-center'>NewsMania - Top {capitalizeFirst(props.category)} HeadLines</h1>
+            <h1 className='text-center text-white'>NewsMania - Top <span className='text-decoration-underline'>{capitalizeFirst(props.category)}</span> HeadLines</h1>
             {loading && <Spinner />}
             <InfiniteScroll
                 dataLength={articles.length}
